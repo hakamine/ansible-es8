@@ -1,0 +1,71 @@
+---
+
+- name: Configure elasticsearch 8.x repository
+  ansible.builtin.yum_repository:
+    name: elasticsearch
+    description: Elasticsearch repository for 8.x packages
+    file: elasticsearch
+    gpgkey: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+    gpgcheck: true
+    baseurl: https://artifacts.elastic.co/packages/8.x/yum
+    enabled: false      # repo is disabled by default
+  tags: es-repo
+
+- name: Install elasticsearch package from repository
+  ansible.builtin.dnf:
+    name: elasticsearch-{{ es_version }}
+    enablerepo: elasticsearch
+    update_cache: true
+  notify:
+    - Restart systemd elasticsearch service (with daemon-reload)
+  tags: es-pkg
+
+- name: Configure JVM heap size if defined
+  ansible.builtin.template:
+    src: etc/elasticsearch/jvm.options.d/heapsize.options.j2
+    dest: /etc/elasticsearch/jvm.options.d/heapsize.options
+    owner: root
+    group: elasticsearch
+    mode: '0660'
+    backup: true
+  when: es_heap_size is defined
+  tags: es-cfg
+  notify:
+    - Restart systemd elasticsearch service (with daemon-reload)
+
+- name: Update ES config files
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/{{ item }}"
+    owner: root
+    group: elasticsearch
+    mode: '0660'
+    backup: true
+  loop:
+    - etc/elasticsearch/elasticsearch.yml
+    - etc/sysconfig/elasticsearch
+  tags: es-cfg
+  notify:
+    - Restart systemd elasticsearch service (with daemon-reload)
+
+# Need a systemd config override to allow memory locking by ES
+- name: Block to configure systemd config override
+  tags: es-cfg
+  block:
+    - name: Create systemd override directory
+      ansible.builtin.file:
+        path: /etc/systemd/system/elasticsearch.service.d
+        state: directory
+        owner: root
+        group: root
+        mode: u=rwx,g=rx,o=rx
+
+    - name: Configure elasticsearch systemd override (LimitMEMLock)
+      ansible.builtin.template:
+        src: etc/systemd/system/elasticsearch.service.d/override.conf.j2
+        dest: /etc/systemd/system/elasticsearch.service.d/override.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify:
+        - Restart systemd elasticsearch service (with daemon-reload)
