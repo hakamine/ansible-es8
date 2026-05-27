@@ -1,0 +1,8 @@
+---
+- name: Verify
+  hosts: molecule
+  gather_facts: true
+  tasks:
+    - name: Verify ES service is up
+      ansible.builtin.wait_for:
+        port: 9200
