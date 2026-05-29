@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: molecule
+  gather_facts: true
+  vars:
+    es_version: 8.19.15
+  tasks:
+    - name: Include the role being tested
+      ansible.builtin.import_role:
+        name: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"

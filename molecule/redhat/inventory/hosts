@@ -1,0 +1,14 @@
+---
+all:
+  children:
+    molecule:
+      hosts:
+        molecule-rh9:
+          ansible_connection: containers.podman.podman
+          container_image: registry.access.redhat.com/ubi9/ubi-init
+          container_log_driver: json-file
+          container_systemd: true
+          container_capabilities:
+            - SYS_ADMIN
+
+            
