@@ -3,8 +3,8 @@ all:
   children:
     molecule:
       hosts:
-        molecule-rh9:
+        molecule-ubuntu2404:
           ansible_connection: containers.podman.podman
-          container_image: registry.access.redhat.com/ubi9/ubi-init
+          container_image: docker.io/hakamine/ubuntu2404-init:main
           container_log_driver: json-file
           container_systemd: true

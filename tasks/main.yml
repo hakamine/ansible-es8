@@ -1,6 +1,14 @@
 ---
+- name: Ensure required packagesfor this role are installed (Debian)
+  ansible.builtin.apt:
+    name:
+      - python3-debian      # for ansible.builtin.deb822_repository module
+    state: present
+    update_cache: true
+  when: ansible_facts['os_family'] == "Debian"
+  tags: es-preflight
 
-- name: Configure elasticsearch 8.x repository
+- name: Configure elasticsearch 8.x repository (RedHat)
   ansible.builtin.yum_repository:
     name: elasticsearch
     description: Elasticsearch repository for 8.x packages
@@ -9,13 +17,35 @@
     gpgcheck: true
     baseurl: https://artifacts.elastic.co/packages/8.x/yum
     enabled: false      # repo is disabled by default
+  when: ansible_facts['os_family'] == "RedHat"
   tags: es-repo
 
-- name: Install elasticsearch package from repository
+- name: Configure elasticsearch 8.x repository (Debian)
+  ansible.builtin.deb822_repository:
+    name: elasticsearch
+    types: [deb]
+    uris: ["https://artifacts.elastic.co/packages/8.x/apt"]
+    suites: [stable]
+    components: [main]
+    signed_by: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+  when: ansible_facts['os_family'] == "Debian"
+  tags: es-repo
+
+- name: Install elasticsearch package from repository (RedHat)
   ansible.builtin.dnf:
     name: elasticsearch-{{ es_version }}
     enablerepo: elasticsearch
     update_cache: true
+  when: ansible_facts['os_family'] == "RedHat"
+  notify:
+    - Restart systemd elasticsearch service (with daemon-reload)
+  tags: es-pkg
+
+- name: Install elasticsearch package from repository (Debian)
+  ansible.builtin.apt:
+    name: "elasticsearch={{ es_version }}"
+    update_cache: true
+  when: ansible_facts['os_family'] == "Debian"
   notify:
     - Restart systemd elasticsearch service (with daemon-reload)
   tags: es-pkg
@@ -33,7 +63,7 @@
   notify:
     - Restart systemd elasticsearch service (with daemon-reload)
 
-- name: Update ES config files
+- name: Update ES config files (RedHat)
   ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "/{{ item }}"
@@ -44,6 +74,23 @@
   loop:
     - etc/elasticsearch/elasticsearch.yml
     - etc/sysconfig/elasticsearch
+  when: ansible_facts['os_family'] == "RedHat"
+  tags: es-cfg
+  notify:
+    - Restart systemd elasticsearch service (with daemon-reload)
+
+- name: Update ES config files (Debian)
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/{{ item }}"
+    owner: root
+    group: elasticsearch
+    mode: '0660'
+    backup: true
+  loop:
+    - etc/elasticsearch/elasticsearch.yml
+    - etc/default/elasticsearch
+  when: ansible_facts['os_family'] == "Debian"
   tags: es-cfg
   notify:
     - Restart systemd elasticsearch service (with daemon-reload)
