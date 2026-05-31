@@ -19,7 +19,7 @@ ansible:
 dependency:
   name: galaxy
   options:
-    requirements-file: ${MOLECULE_SCENARIO_DIRECTORY}/requirements.yml
+    requirements-file: "${MOLECULE_SCENARIO_DIRECTORY}/requirements.yml"
 
 scenario:
   test_sequence:
