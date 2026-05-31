@@ -33,4 +33,4 @@ jobs:
         run: uv sync --group dev
 
       - name: Run molecule test
-        run: uv run molecule test -s ${{ matrix.scenario }}
+        run: uv run molecule test -s ${{ matrix.scenario }} --report --command-borders
