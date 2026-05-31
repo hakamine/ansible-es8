@@ -3,7 +3,7 @@ name: Molecule Test
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
   workflow_dispatch:
 
@@ -14,6 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         scenario:
+          - ubuntu
           - redhat
 
     steps:
@@ -32,4 +33,4 @@ jobs:
         run: uv sync --group dev
 
       - name: Run molecule test
-        run: uv run molecule test -s ${{ matrix.scenario }}
+        run: uv run molecule test -s ${{ matrix.scenario }} --report --command-borders
