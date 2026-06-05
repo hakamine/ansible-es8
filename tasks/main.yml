@@ -116,3 +116,20 @@
         mode: "0644"
       notify:
         - Restart systemd elasticsearch service (with daemon-reload)
+
+# Temporary directory
+# https://www.elastic.co/guide/en/elasticsearch/reference/8.19/executable-jna-tmpdir.html
+# https://www.elastic.co/docs/deploy-manage/deploy/self-managed/important-settings-configuration#es-tmpdir
+- name: Create ES temporary directory
+  ansible.builtin.file:
+    path: "{{ es_tmpdir }}"
+    state: directory
+    owner: elasticsearch
+    group: elasticsearch
+    mode: u=rwx,g=rx
+  when:
+    - es_tmpdir is defined
+    - es_tmpdir_create is defined and es_tmpdir_create
+  notify:
+    - Restart systemd elasticsearch service (with daemon-reload)
+  tags: es-tmpdir
