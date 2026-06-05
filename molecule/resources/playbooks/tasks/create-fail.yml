@@ -11,4 +11,4 @@
       Container {{ item.container.Name }} failed to start properly.
       Exit Code: {{ item.container.State.ExitCode }}
       Running: {{ item.container.State.Running }}
-      Log output: {{ logfile_cmd.stdout | default('No logs available')
+      Log output: {{ logfile_cmd.stdout | default('No logs available') }}

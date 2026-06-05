@@ -1,0 +1,14 @@
+# .ansible-lint
+
+# exclude_paths included in this file are parsed relative to this file's location
+# and not relative to the CWD of execution. CLI arguments passed to the --exclude
+# option are parsed relative to the CWD of execution.
+exclude_paths:
+  - .pre-commit-config.yaml  # do not lint pre-commit config file
+  - .ansible-lint  # do not lint this file itself
+  - .github/  # do not lint GitHub workflow files
+
+# mock_modules are used to provide metadata for modules that are not present in the repository
+mock_modules:
+  - containers.podman.podman_container_info
+  - containers.podman.podman_container

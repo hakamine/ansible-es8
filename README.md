@@ -1,4 +1,4 @@
-# internal-es8-el9 (Elasticsearch role)
+# ansible-es8 (Elasticsearch 8.0 role)
 
 <!--TOC-->
 
@@ -27,8 +27,9 @@ there is no need to install Java/OpenJDK separately (ref.
 - Elasticsearch 8.x by default has security enabled. This role changes
 the configuration to disable security, so that Archivematica can use it
 - Heap size is configured in `/etc/elasticsearch/jvm.options.d/`
-- ES_TMPDIR env var configured in `/etc/sysconfig/elasticsearch` (RedHat) 
+- ES_TMPDIR env var configured in `/etc/sysconfig/elasticsearch` (RedHat)
   or `/etc/sysconfig/elasticsearch` (Debian)
+
 ## 1. Required variables
 
 Define in host_vars/group_vars:
