@@ -4,7 +4,21 @@ on:
   push:
     branches:
       - main
+    paths:
+      # Run molecule tests only if role or molecule files change
+      - "defaults/**"
+      - "handlers/**"
+      - "molecule/**"
+      - "tasks/**"
+      - "templates/**"
   pull_request:
+    paths:
+      # Run molecule tests only if role or molecule files change
+      - "defaults/**"
+      - "handlers/**"
+      - "molecule/**"
+      - "tasks/**"
+      - "templates/**"
   workflow_dispatch:
 
 jobs:
