@@ -1,0 +1,20 @@
+name: Pre-commit checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  prek:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      # https://prek.j178.dev/integrations/#github-actions
+      - name: Install and run prek on all files
+        uses: j178/prek-action@v2
