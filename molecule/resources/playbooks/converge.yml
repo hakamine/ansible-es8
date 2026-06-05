@@ -4,6 +4,8 @@
   gather_facts: true
   vars:
     es_version: 8.19.15
+    es_tmpdir: /var/lib/elasticsearch/tmp
+    es_tmpdir_create: true
   tasks:
     - name: Include the role being tested
       ansible.builtin.import_role:
